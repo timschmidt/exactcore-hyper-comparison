@@ -200,7 +200,12 @@ fn every_hyper_crate_has_an_explicit_audit_disposition() {
     let root = project_root();
     let rows = read_tsv(&root.join("coverage/hyper-crates.tsv"), &CRATE_HEADER);
     let mut audited = BTreeMap::new();
-    let valid_statuses = ["compared", "blocked", "no-direct-counterpart"];
+    let valid_statuses = [
+        "compared",
+        "blocked",
+        "comparison-pending",
+        "no-direct-counterpart",
+    ];
 
     for row in rows {
         let name = &row[0];
@@ -241,7 +246,7 @@ fn every_hyper_crate_has_an_explicit_audit_disposition() {
     );
     assert_eq!(
         audited.get("hyperbrep").map(String::as_str),
-        Some("blocked")
+        Some("comparison-pending")
     );
 }
 

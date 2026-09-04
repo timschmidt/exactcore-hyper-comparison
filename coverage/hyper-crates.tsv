@@ -7,7 +7,7 @@ hypertri	compared	Two-dimensional Delaunay complex and triangulation	tests/trian
 hypercurve	compared	Finite line segments supporting circles and circle relations	tests/curves.rs;benches/curves.rs	Feature curve; higher curve families have no exactCore counterpart
 hypermesh	compared	Planes convex triangles and pairwise triangle intersection	tests/meshes.rs;benches/meshes.rs	Feature mesh; general mesh booleans have no exactCore counterpart
 hyperpath	compared	Line-path metrics order and explicit-circle boundary predicates	tests/paths.rs;benches/paths.rs	Feature path; route constraints have no exactCore counterpart
-hyperbrep	blocked	Finite Curve3 lines and planar Surface classification	-	Current crate fails to compile against current hypercurve API with obsolete CurvePolicy LineArcRegion2 and pre-CurveOutcome calls
+hyperbrep	comparison-pending	Finite Curve3 lines and planar Surface classification	-	Build compatibility is restored; a dedicated exactCore differential test and benchmark suite has not yet been added
 hypercircuit	no-direct-counterpart	Circuit MNA event routing board and interchange domain APIs	-	Uses exact-aware carriers but exactCore has no circuit model
 hyperdrc	no-direct-counterpart	Gerber parsing spatial indexing and PCB design-rule checking	-	No exactCore PCB or Gerber API
 hyperevolution	no-direct-counterpart	Evolutionary proposal and fitness carriers	-	No exactCore optimization-search API

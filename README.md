@@ -167,11 +167,11 @@ The default suite covers the common kernels:
 
 Feature suites exercise the same exactCore oracle through higher-level public
 APIs in `hypercurve`, `hypermesh`, and `hyperpath`. `hyperbrep` was audited and
-has finite-line and plane operations that would be comparable, but its current
-checkout does not compile against the current `hypercurve` API (it expects the
-older `CurvePolicy`, `LineArcRegion2`, and pre-`CurveOutcome` signatures). It is
-therefore recorded as a build blocker rather than silently omitted or repaired
-as part of this independent harness.
+has finite-line and plane operations that would be comparable. Its checkout is
+compatible with the current `hypercurve` context/outcome API, but a dedicated
+exactCore differential test and benchmark suite has not yet been added, so it is
+recorded explicitly as comparison-pending rather than silently counted as
+compared.
 
 `tests/coverage_manifest.rs` enforces the audit mechanically. It checks that:
 
@@ -183,8 +183,8 @@ as part of this independent harness.
   catalog, with both native and Hyper fixtures constructed and executed in the
   all-feature test suite;
 - every comparable row names existing test and benchmark source files; and
-- divergences identify an ignored regression, while unsafe/build-blocked rows
-  carry an explicit reason.
+- divergences identify an ignored regression, while unsafe, build-blocked, and
+  comparison-pending rows carry an explicit reason.
 
 The oracle and Hyper calls run in the same process with the same integer or
 rational input. Exact values are compared textually where both sides remain

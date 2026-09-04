@@ -1,6 +1,6 @@
 # exactCorelib vs. Hyper: exhaustive comparison report
 
-**Audit date:** 2026-08-21
+**Audit date:** 2026-08-24
 **exactCore subject:** the local `exactCorelib-main/trunk` checkout, which identifies
 itself as version 2.1.0 in its Makefile and as the July 2010 version 2.1 release in
 its README. The tree contains later edits, so “2.1.0” is a source-tree identity,
@@ -44,8 +44,8 @@ hidden from the passing result.
 | Measure | Result |
 |---|---:|
 | Hyper crates audited | 18 / 18 |
-| Crates with direct comparable surface | 8 |
-| Crates blocked by source incompatibility | 1 (`hyperbrep`) |
+| Crates with differential suites | 8 |
+| Compatible crates awaiting a differential suite | 1 (`hyperbrep`) |
 | Crates with no same-domain exactCore contract | 9 |
 | Semantic comparison families | 65 |
 | Direct matches | 49 (75.4% of all rows) |
@@ -215,7 +215,9 @@ lower-hull test; it does not benchmark an unmodified demo executable.
 
 These are local package versions, not claims about crates.io releases. “No direct
 counterpart” still allows the crate to consume a lower-level primitive already
-compared elsewhere.
+compared elsewhere. “Comparison pending” means the crate builds against its
+current dependencies and has direct mathematical overlap, but does not yet have
+its own differential test and benchmark suite.
 
 | Crate | Version | Disposition | Direct overlap or reason |
 |---|---:|---|---|
@@ -227,7 +229,7 @@ compared elsewhere.
 | `hypercurve` | 0.3.1 | compared, feature-gated | Finite lines and supporting-circle semantics; no exactCore Bezier/B-spline/NURBS counterpart |
 | `hypermesh` | 0.1.0 | compared, feature-gated | Planes, convex triangles and pairwise triangle contacts; no exactCore mesh-boolean system counterpart |
 | `hyperpath` | 0.3.0 | compared, feature-gated | Line-path metrics/order and explicit full-circle boundary predicates |
-| `hyperbrep` | 0.2.0 | blocked | Finite `Curve3` lines and planar surfaces overlap, but this checkout expects obsolete `CurvePolicy`, `LineArcRegion2`, pre-`CurveOutcome` signatures and private/changed `hypercurve` APIs; it currently produces roughly 189 compile errors |
+| `hyperbrep` | 0.2.0 | comparison pending | Finite `Curve3` lines and planar surfaces overlap and the crate builds against the current `hypercurve` context/outcome API; a dedicated exactCore differential suite remains to be added |
 | `hypercircuit` | 0.3.0 | no direct counterpart | Circuit MNA, event routing, board and interchange domain APIs; exactCore has no circuit model |
 | `hyperdrc` | 0.3.0 | no direct counterpart | Gerber parsing, spatial indexing and PCB design-rule checking |
 | `hyperevolution` | 0.3.0 | no direct counterpart | Evolutionary proposal/fitness/search carriers |
@@ -662,8 +664,8 @@ still account for the following:
 - `dt4` is O(n^4) and returns a cell complex; Hyper algorithms and tie-breaking
   may solve a different output contract. Large-n timing would not be an
   apples-to-apples implementation comparison.
-- Unsafe clipping and the noncompiling `hyperbrep` crate have no benchmark and are
-  not represented as zero/slow results.
+- Unsafe clipping and the comparison-pending `hyperbrep` surface have no benchmark
+  and are not represented as zero/slow results.
 
 ## What remains outside the pair
 
@@ -701,9 +703,9 @@ against exactCore's correctness on its smaller surface.
 6. **Preserve explicit adapters.** Circle separation, cocircular Delaunay output,
    zero-length segments and boundary-hit queries are legitimate contract choices;
    callers need named conversions, not silent equality assumptions.
-7. **Unblock `hyperbrep` as a separate compatibility change.** Updating it to the
-   current `hypercurve` context/outcome model would permit a future finite-line and
-   planar-surface comparison without mutating the present audit subjects.
+7. **Add a dedicated `hyperbrep` differential suite.** Build compatibility with
+   the current `hypercurve` context/outcome model is restored; finite-line and
+   planar-surface tests and paired benchmarks are the remaining comparison work.
 
 ## Reproduce and inspect
 
