@@ -1,5 +1,10 @@
 # exactCorelib / Hyper comparison
 
+The standalone code and evidence from the later exactCorelib, constructive-real,
+and exact-real ecosystem audits are consolidated in [audits/](audits/README.md).
+That index documents the qualification suites, recovered experiments, source
+snapshots, dependencies, and byte-for-byte migration verification.
+
 This directory is a standalone differential-test and benchmark harness for the
 exactCorelib checkout in `../exactCorelib-main/trunk` and every `hyper*` crate
 currently present beside it in the workspace.

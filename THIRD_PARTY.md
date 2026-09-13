@@ -1,8 +1,17 @@
 # Third-party dependency boundary
 
-This repository contains only the independently written comparison harness,
-tests, benchmarks, analysis scripts, and recorded reports. It does **not**
-contain or redistribute exactCorelib source code.
+The root comparison harness contains independently written tests, benchmarks,
+analysis scripts, and recorded reports. It does **not** contain or redistribute
+exactCorelib source code.
+
+The `audits/` archive additionally preserves historical Hyper snapshots and
+compatibility copies of other audited implementations. Those files retain
+their original licenses and notices; the root MIT/Apache-2.0 license does not
+relicense them. `audits/migration.json` identifies their original paths and
+exact digests. `audits/dependencies.json` records the external donor checkouts,
+commit pins, origins, and top-level license locations. Archived source trees
+include their accompanying license and copyright files. The original exactCorelib
+checkout and the active Hyper crates remain external dependencies.
 
 The build consumes an external exactCorelib checkout through its public C++
 headers and compiles the source files from that checkout in place. By default,

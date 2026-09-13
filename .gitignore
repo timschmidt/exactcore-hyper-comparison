@@ -1,5 +1,9 @@
 # Rust and native build output
 /target/
+/audits/**/target/
+/audits/**/__pycache__/
+/audits/**/.stack-work/
+/scripts/__pycache__/
 *.profraw
 *.profdata
 *.gcda
