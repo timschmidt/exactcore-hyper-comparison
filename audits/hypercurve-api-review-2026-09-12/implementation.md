@@ -8459,3 +8459,27 @@ The fixes below are in hypersolve and hypercurve. Each was found by sampling the
   - `bevel_then_round_erosion_of_a_weight_six_conic_completes` still exceeds 600 s.
   - Hypersolve passes 940 tests. Full validation then passed: Hypercurve 2,392 (448 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features, plus the default-feature builds. A midpoint that is an exactly stored zero still collapses the bracket, as the exact-midpoint test requires.
   - Commits: hypersolve d3a3f38, hypercurve babc6c30.
+
+### Ignored-harness sweep after d3a3f38 / babc6c30, and the bounded sign-ordering fix (2026-10-05)
+
+Every case had a 300 s budget, and the hyperbola pair was skipped as a known stall.
+
+**Passing (5):**
+- `booleans_then_double_round_erosion_completes`: 75 s.
+- `repeated_inward_miter_offset_of_a_weighted_quadratic_completes`: 180 s. This is a new pass.
+- `weighted_conic_miter_bevel_bevel_offsets_complete`: 61 s.
+- `mixed_cubic_arc_miter_stroke_completes`: 204 s.
+- `mixed_family_miter_stroke_round_trips`: 124 s.
+
+**Regression:** `beveled_rational_seed_double_inward_offset_completes` went from 59 s to over 300 s.
+- **Cause:** sampling showed babc6c30's `order_by_simple_root_sign` ran its tower `polynomial_sign` as a complete pass. That pass bisected up to 512 steps, with an exact tower sign at each step, and cost more than the global promotion it was meant to avoid.
+- **Fix:** the attempt now runs under `bounded_exact_predicate_pass`. If it cannot decide cheaply, the step-15 promotion proceeds exactly as before.
+
+**Results with the fix:**
+- `beveled_rational_seed_double_inward_offset_completes`: 59 s, restored.
+- `repeated_inward_miter_offset_of_a_weighted_quadratic_completes`: 21 s.
+- `bevel_then_round_erosion_of_a_weight_six_conic_completes`: passes in 115 s; it never completed before.
+- `wide_weighted_conic_miter_bevel_bevel_offsets_complete`: still over 300 s.
+
+The two group-B promotion stalls are resolved. No case is un-ignored yet: these runtimes remain far above the suite's ordinary per-test scale.
+- **Validation and commit:** full validation passed: Hypercurve 2,392 (549 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features, plus the default-feature builds. Committed as hypercurve 82ee35fd.
