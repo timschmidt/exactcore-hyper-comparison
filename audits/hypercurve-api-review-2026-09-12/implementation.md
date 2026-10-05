@@ -8438,3 +8438,24 @@ Decision (user, this session): the principal API is exact-only. `APPROXIMATE_512
   - Merged `agent/zizmor-ci-hardening` into main: openscad-rs e0585a4; alumina-interface f0d9683 (one conflict in `motion_schedule.rs`, resolved to main's migrated exact-only call; the merged workspace passes 394 with 0 failed); alumina-firmware fast-forwarded to bdee397; csgrs-ffi 62b0938; citizen-builder's branch was already contained in main. Stale `/tmp/zizmor-main` worktree registrations (missing directories) were pruned where they blocked checking out main.
   - csgrs-ffi de804d6: it is a path dependent of csgrs that earlier dependent scans missed, and it no longer compiled against the adapter API (context-taking `region_profiles`/`extrude`/`extrude_vector`/`revolve` returning `GeometryOutcome`). It now passes `GeometryContext::STRICT`; 7 passed, clippy clean.
   - Pushed main for every repository ahead of origin. exactcore-hyper-comparison was rejected by GitHub: commit 74b90b3 contains files over 100 MB under `audits/continuation/calcium/results/`. It needs a history rewrite or LFS, which is the user's decision. NURBS_BREP_kernel's remote reports the repository as not found.
+- Group-B attempt, tried and reverted (2026-10-05): `order_by_simple_root_sign`. When the native root's defining polynomial has opposite nonzero signs at its isolator ends, order a recursive-tower value against it by the sign of that polynomial at the value, tried before `promoted_bezier_parameter_complete` at refinement step 15.
+  - The method is sound and was reached in `bevel_then_round_erosion_of_a_weight_six_conic_completes`, but the cost moved into the tower's own `polynomial_sign` (`refined_parameter` → `defining_sign_at_real` → `sign_at_projected_zero`). Neither route completes within 600 s, and that case and `repeated_inward_miter_offset_of_a_weighted_quadratic_completes` still time out. Reverted for lack of a demonstrated improvement.
+  - Group A after hypersolve f899d11: all seven remaining group-A cases still exceed 300 s; the two-root proof removes only their first stall.
+
+### Group B: reducible towers, coefficient growth and bisection (2026-10-05)
+
+The fixes below are in hypersolve and hypercurve. Each was found by sampling the stalled process.
+
+- **Duplicate square-root generators.** The recursive tower for `bevel_then_round_erosion_of_a_weight_six_conic_completes` was four levels deep, and every level adjoined the same √r (r ≈ 485.236). The field therefore had degree 16 where degree 2 suffices. Its coefficients reached about 10¹³⁷, which defeated interval evaluation at every point, so every sign fell back to the exact recursive norm.
+  - A trace of `RecursiveQuadraticField::extension` located two sources. One is hypersolve's positive-square-root generator for a merged radicand (`recursive_quadratic_field.rs`). The other is hypercurve's recursive parallel speed (`bezier_offset/recursive_quadratic.rs`). Neither consulted `retained_positive_square_root`, which other sites already used.
+  - Both now reuse an authored generator before extending, and towers stay at depth 0–1.
+- **Local-field content.** `LocalFieldContext::normalize_positive_scale`, used by the two-root Sturm–Tarski proof from f899d11, was a no-op. Division-free remainders therefore grew without bound.
+  - It now puts each fraction in primitive integer form, which preserves its value.
+  - The numerators then take one positive common scale, which preserves signs and roots. `Rational::primitive_bigint_ratio` scales by a positive factor.
+- **Fuzzy bisection (`bracket_split`).** A recursive root bracket chooses among the 1/2, 1/4 and 3/4 points by certified interval sign before paying for the complete sign at the midpoint. At least one candidate lies a quarter-width from the root.
+- **Sign-change ordering (`order_by_simple_root_sign`).** This is re-applied. When the native root's defining polynomial has opposite nonzero signs at its isolator ends, its sign at the tower value orders the two values. This runs before the step-15 global promotion.
+- **Results.**
+  - `repeated_inward_miter_offset_of_a_weighted_quadratic_completes` now passes in 181 s; it previously ran past 600 s.
+  - `bevel_then_round_erosion_of_a_weight_six_conic_completes` still exceeds 600 s.
+  - Hypersolve passes 940 tests. Full validation then passed: Hypercurve 2,392 (448 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features, plus the default-feature builds. A midpoint that is an exactly stored zero still collapses the bracket, as the exact-midpoint test requires.
+  - Commits: hypersolve d3a3f38, hypercurve babc6c30.
