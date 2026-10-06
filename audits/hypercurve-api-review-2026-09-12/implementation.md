@@ -8712,3 +8712,15 @@ For two sources, a nested local field would be used.
 - The case still exceeds 300 s, now through the volume of rational signs in `fillet_point_parameters` → `visit_point_incidence_evidence`.
 
 **Validation.** Hypercurve 2,392 (565 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+
+### Modular-first filter signs at rational selected roots (2026-10-06, hypercurve 7c4b1635)
+
+**Problem.** After cb372d03, `refilleting` spent 155 s in 22 `sign_at_selected_root` chains. Each one signed a degree-27 rational filter at the degree-28 rational t*.
+
+**Change.** When the defining and filter polynomials are both exact rationals, `polynomial_sign_by_algebraic_replay` first runs `univariate_polynomials_modular_coprimality`.
+- **Coprime:** `coprime_filter_sign_by_bisection` bisects a local copy of the isolator on the defining polynomial's sign change, with Horner or Bernstein enclosures at 8, 16, … up to 4096 steps. The retained parameter is not refined, which keeps `algebraic_sign_queries_reuse_the_singleton_for_tiny_separations` passing; a first version that refined the parameter itself failed it.
+- **CommonFactorLikely:** the exact gcd runs before any Sturm–Tarski chain.
+
+**Result.** All 23 signs decide, needing 8–2048 steps, in about 40 s total instead of 155 s. The case still exceeds 300 s.
+
+**Validation.** Hypercurve 2,392 (583 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
