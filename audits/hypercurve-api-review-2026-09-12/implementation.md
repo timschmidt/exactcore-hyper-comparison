@@ -8599,3 +8599,17 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 - `chamfered_quadratic` still exceeds 300 s.
 
 **Validation.** Hypersolve 941, Hypercurve 2,392 (530 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
+- **Dyadic bracket shortening, tried and reverted.** I tried replacing the isolator's wide rational endpoints with short dyadic grid points strictly inside it, kept only when the defining polynomial still brackets the root.
+  - It made no measurable difference: `nested_xor` stayed at 291 s, while `chamfered_quadratic` and `filleted_union` still exceeded 300 s.
+
+### Sign-change refinement for admitted roots (2026-10-06, hypersolve b95e758)
+
+**Problem.** `compare_admitted_algebraic_root_representations_with_refinement` rebuilt a full Sturm sequence on every refinement round.
+
+**Change.** New `refine_owned_isolated_univariate_polynomial_interval`. It bisects by sign when the endpoint signs are opposite and nonzero; uniqueness is already owned by the admitted representation. Every other interval keeps the complete Sturm refinement.
+
+**Results.**
+- `round_stroke_of_a_filleted_nurbs_pair_completes` moves past its root-comparison stall into `selected_parallel_normal_parallel_intersections`. There, `strict_coefficients_sign_on_parameter_interval` → `polynomial_restrict_to_interval` dominates. That kernel is S6 group D site 16.
+- `chamfered_spline`, `refilleting`, `miter_eroded_ring` and `round_stroke_heavy_nurbs` still exceed 300 s.
+
+**Validation.** Hypersolve 941, Hypercurve 2,392 (538 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
