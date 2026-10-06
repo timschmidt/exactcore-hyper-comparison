@@ -8623,3 +8623,35 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 **Result.** The case moves past these signs into selected-fiber Bernstein root isolation (`isolate_local_polynomial_roots_bernstein` via `selected_fiber_root_intervals_in_interval`).
 
 **Validation.** Hypercurve 2,392 (516 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+
+### Ignored-case sweep after hypersolve b95e758 and hypercurve 744e130d (2026-10-06)
+
+Each case had a 300 s budget, and the hyperbola pair was skipped as a known stall. **8 cases pass, against 5 in the previous sweep.**
+
+**Passing:**
+- `bevel_then_round_erosion_of_a_weight_six_conic_completes`: 106 s. New.
+- `beveled_rational_seed_double_inward_offset_completes`: 56 s.
+- `booleans_then_double_round_erosion_completes`: 75 s.
+- `nested_xor_miter_dilation_completes`: 290 s. New.
+- `repeated_inward_miter_offset_of_a_weighted_quadratic_completes`: 20 s. New.
+- `weighted_conic_miter_bevel_bevel_offsets_complete`: 60 s.
+- `mixed_cubic_arc_miter_stroke_completes`: 200 s.
+- `mixed_family_miter_stroke_round_trips`: 123 s.
+
+**Still over 300 s (15):**
+- `chamfered_conic_round_then_miter_inward_offset_completes`
+- `filleted_boolean_miter_erosion_completes`
+- `filleted_union_miter_dilation_completes`
+- `miter_eroded_ring_miter_erosion_completes`
+- `wide_weighted_conic_miter_bevel_bevel_offsets_complete`
+- the four chamfered strokes
+- `miter_stroke_of_a_filleted_heavy_rational_cubic_completes`
+- `refilleting_a_filleted_vertex_completes`
+- both round strokes of filleted NURBS
+- `stroke_fillet_stroke_of_a_cubic_arc_path_completes`
+
+No case is un-ignored. The passes still run far above the suite's ordinary per-test scale.
+
+**`round_stroke_of_a_filleted_nurbs_pair_completes`.** It now stalls in selected-fiber Bernstein root isolation (`isolate_local_polynomial_roots_bernstein`) over a local field of degree 214, defined by a polynomial with 426-bit coefficients. Each isolation takes about 8 s.
+- **Origin of the field.** The selected parallel-normal circle's frame centre arrives at `selected_parallel_normal_parallel_intersections` already as a degree-214 `BezierParameter2::Algebraic`. It is not a selected fiber, recursive value or scalar. So this is not an S6 promotion at site 16: the centre is authored upstream as a global algebraic parameter.
+- **Tried and reverted.** Moving the conservative bounds exclusion ahead of the selected-normal kernel gave no gain. The expensive pairs overlap.
