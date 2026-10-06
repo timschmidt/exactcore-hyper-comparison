@@ -8769,3 +8769,34 @@ The other 15 still exceed 300 s.
 - It moved the stall from the gcd to the Sturm chain, and then into `normalize_local_polynomial` field divisions.
 - Neither this case nor `stroke_fillet_stroke` improved within 300 s.
 - Counting roots of a degree-36+ polynomial over a degree-14 field remains the cost, whichever chain is used.
+
+### S6 status after hypercurve 20a35d9b (2026-10-06)
+
+**Converted:**
+- **Group A (sites 1–3):** e576cbd1.
+- **Site 5:** 67f5e2da.
+- **Group C sites 7 and 8:** 3ba1fd17.
+- **Site 11b:** 20a35d9b. `selected_parallel_contact_order_to_real` signs its tangent cross/dot predicate through `bivariate_sign_at_cusp_and_region_parameter`.
+
+**Remaining `promote_curve_region_bezier_parameter` references (16), by kind:**
+- **Deliberate cold fallbacks (3):**
+  - the helper's own promotion (cusp_overlap.rs:208);
+  - site 1's rational-discovery promotion (cusp_overlap.rs:167);
+  - site 5's unit complement of a mapped chord or cusp parameter (cusp_semicircle.rs:3709).
+- **Group C, two-radical cut relations (sites 6 and 10):** cusp_semicircle.rs:3870 and parameters.rs:4924. Deferred: they flow through `independent_diameter_sum_is_zero` and need a selected-fiber two-radical zero test.
+- **Group B site 4:** parallel_kernel.rs:2820. Widening `BezierAlgebraicCuspSemicircleParallelContact2.parallel_parameter` to `CurveParameter2` touches about 138 uses.
+- **Group D, frame centres seeding a field or kernel (sites 11a, 12–17):**
+  - parameters.rs:2944
+  - fragment.rs:1293
+  - frames.rs:578
+  - chord_kernel.rs:6190
+  - rational_kernel.rs:1486
+  - parallel_kernel.rs:1304
+  - cusp_semicircle.rs:7387
+
+  These need an in-field centre field, and the selected-fiber kernels need porting.
+- **Genuinely global (2):**
+  - site 9 (cusp_semicircle.rs:6024): a trivariate system over three independent axes;
+  - site 18 (tangent.rs:1395): the cold trivariate fallback.
+
+**Observation.** In the measured stall (`round_stroke_of_a_filleted_nurbs_pair_completes`), the group-D centre arrives already as a degree-214 Bezier parameter. Converting group D would not reduce that case's field degree. Its cost comes from the upstream fillet-centre construction.
