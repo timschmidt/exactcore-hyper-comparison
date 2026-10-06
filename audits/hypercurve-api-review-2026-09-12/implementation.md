@@ -8724,3 +8724,7 @@ For two sources, a nested local field would be used.
 **Result.** All 23 signs decide, needing 8–2048 steps, in about 40 s total instead of 155 s. The case still exceeds 300 s.
 
 **Validation.** Hypercurve 2,392 (583 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+- **Mean-value enclosure, tried and reverted.** I added an exact-midpoint value plus a Horner bound on P′, checked before the Bernstein restriction in `coprime_filter_sign_by_bisection`.
+  - It did not decide where Horner on P fails, because the derivative bound has the same cancellation.
+  - It also made things worse: exact interval Horner over endpoints of about 2,000 bits inflates intermediate rationals, and enclosure time in the run rose to 166 s.
+  - The remaining `refilleting` cost is the refined-bracket enclosures: 24 calls, 8–2048 steps, and one call undecided past the budget. These are values that need roughly 2,000-bit separation.
