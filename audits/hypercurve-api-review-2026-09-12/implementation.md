@@ -8529,3 +8529,15 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 - `nested_xor` now passes its two-root signs and stalls next in recursive-quadratic root isolation (`recursive_quadratic_polynomial_local_parameters`), the same frame as `chamfered_conic_round_then_miter_inward_offset_completes`.
 - The other five cases in the group still exceed 300 s.
 - Validation passed: hypersolve 940 plus the new test, Hypercurve 2,392 (530 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features.
+
+### Modular nonzero certificate for two-root predicates (2026-10-05, hypersolve 12fe9ed)
+
+**Diagnosis.** `filleted_union_miter_dilation_completes` stalled inside the exact norm determinant of 240ab89.
+- The field, predicate and defining polynomial all have degree 5–6.
+- The predicate's coefficients are about 25,800 bits, produced by radical squaring in `dense_positive_square_root_sum_sign`.
+
+**Fix.** `predicate_vanishes_at_isolated_root` now first calls `modular_gcd::algebraic_extension_polynomials_certainly_coprime(modulus, predicate-by-generator, D)`. This is Res_β(m, P(β, x)) mod small primes, gcd'd with D. Coprimality proves P(βᵢ, x₀) ≠ 0 on every sheet, and it decided in about 0.2 ms.
+
+**Remaining.** In this case the nonzero value is so small that 64 Bernstein bisections (about 26 s) do not separate it, and the complete chain then runs. A rule that sent certified-nonzero cases with small D directly to the chain showed no gain and was dropped.
+
+**Validation.** Hypersolve 941, Hypercurve 2,392, hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
