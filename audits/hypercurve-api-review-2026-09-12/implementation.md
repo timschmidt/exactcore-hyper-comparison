@@ -8671,3 +8671,7 @@ No case is un-ignored. The passes still run far above the suite's ordinary per-t
 **Separate issue.** In `refilleting_a_filleted_vertex_completes` the same call takes 43 s with a degree-14 parameter and non-rational filter coefficients. That is general-`Real` Sturm-Tarski arithmetic, not degree.
 
 **Validation.** Hypercurve 2,392 (499 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+- **`refilleting_a_filleted_vertex_completes`: two attempts, both reverted.** The 43 s selected-root sign has a degree-13 filter whose coefficients are not exact rationals. They reach 10⁵⁵–10¹³⁸ and nearly cancel at the parameter.
+  - Extending the Horner enclosure to certified dyadic coefficient bounds (128 and 512 bits) did not decide it.
+  - Neither did a 32-step refined-interval enclosure pass before the chain. It cost 0.3–1.1 s per call with no decision, because separation needs hundreds of bits of root precision.
+  - The remaining cost is general-`Real` Sturm–Tarski arithmetic in `hypersolve::sign_at_selected_root` (`compact_exact_coefficients`, `polynomial_div_rem`).
