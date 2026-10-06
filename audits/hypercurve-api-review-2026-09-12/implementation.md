@@ -8659,3 +8659,15 @@ No case is un-ignored. The passes still run far above the suite's ordinary per-t
   - That frame's `center_parameter` is built in `curve_fillet_centers.rs` from `anchor_evidence.center_parallel`, which is the offset-curve intersection on the centre's parallel.
   - The degree-214 polynomial is square-free (modular coprime with its derivative). The degree is therefore not inflated by repeated factors, and is most likely intrinsic to intersecting the two NURBS offsets.
   - Cutting it would need a different centre representation, for example a selected fiber over the other offset's parameter. That is a construction change, not a local fast path.
+
+### Filter-side exclusion for high-degree parameters (2026-10-06, hypercurve 6663ac90)
+
+**Problem.** In `miter_eroded_ring_miter_erosion_completes`, `polynomial_sign_by_algebraic_replay` spent 73 s in `hypersolve::sign_at_selected_root` to prove a degree-14 filter zero at a degree-182 parameter.
+
+**Change.** When the defining polynomial has more than twice the filter's coefficients, the function now goes straight to its existing gcd zero test and filter-Sturm exclusion.
+
+**Result.** The case moves past this into recursive-tower interval evaluation (`RecursiveQuadraticValue::bounded_interval_sign`).
+
+**Separate issue.** In `refilleting_a_filleted_vertex_completes` the same call takes 43 s with a degree-14 parameter and non-rational filter coefficients. That is general-`Real` Sturm-Tarski arithmetic, not degree.
+
+**Validation.** Hypercurve 2,392 (499 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
