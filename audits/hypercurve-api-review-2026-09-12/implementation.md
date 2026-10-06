@@ -8696,3 +8696,19 @@ For two sources, a nested local field would be used.
 **Root cause in `refilleting`.** The tower's base expression coefficients are not rationals but deep lazy `Real` DAGs. Even `{:?}` formatting of one coefficient ran for minutes. Every exact operation on them (Sturm–Tarski, local gcd) pays that cost, and the modular certificate cannot apply.
 
 **Recommended next step.** Find where these lazy DAG coefficients are introduced, likely fillet-of-fillet construction on `solve_carrier_fillet_corner` → `fillet_point_parameters`. Then retain them as algebraic generators or normalized rationals instead.
+
+### Rational defining polynomials for fillet line-offset contacts (2026-10-06, hypercurve cb372d03)
+
+**Problem.** In `refilleting_a_filleted_vertex_completes`, the first fillet offsets the line with d = (6, 2) by the unit normal (3/√10, 1/√10). The fillet centre's parameter t* therefore had a defining polynomial (`squared_relation` in `supporting_line_incidence_with_certified_contacts`) with lazy irrational `Real` coefficients. Each later `dense_reduce_selected_tuple_relations` built deep DAGs.
+
+**Change.**
+- `supporting_line_incidence_with_direction` and `supporting_line_incidence_with_certified_contacts` now take `rational_offset: Option<(&LineSeg2, &Real)>`.
+- When every input is an exact rational, |d|²·relation = R − X. Here R = (L₀² + sd²|d|²w²)·S − M₀² and X = sd·|d|·2w·L₀·S, so the candidates come from the rational norm R² − sd²|d|²X₀².
+- Each candidate is kept only when sign(R) = sign(sd)·sign(X₀), which selects the authored offset line. The opposite offset line's roots are dropped.
+- `curve_fillet_centers.rs` passes the native source line and signed distance at both line × parallel sites.
+
+**Result.**
+- t* now has a rational degree-28 polynomial, and the second fillet's signs run on rational coefficients (about 50–90 ms per Bernstein sign).
+- The case still exceeds 300 s, now through the volume of rational signs in `fillet_point_parameters` → `visit_point_incidence_evidence`.
+
+**Validation.** Hypercurve 2,392 (565 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
