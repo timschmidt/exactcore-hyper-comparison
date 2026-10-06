@@ -8728,3 +8728,7 @@ For two sources, a nested local field would be used.
   - It did not decide where Horner on P fails, because the derivative bound has the same cancellation.
   - It also made things worse: exact interval Horner over endpoints of about 2,000 bits inflates intermediate rationals, and enclosure time in the run rose to 166 s.
   - The remaining `refilleting` cost is the refined-bracket enclosures: 24 calls, 8–2048 steps, and one call undecided past the budget. These are values that need roughly 2,000-bit separation.
+- **In-field two-radical sign, retried on rational t\* and reverted.** With t* now rational (degree 28), I re-applied `two_positive_square_root_sum_sign_in_field` to `refilleting`.
+  - All 10 in-field calls decided, but they took 94 s; one took 84 s inside `LocalAlgebraicField` interval refinement.
+  - The dense route with modular-first filter signs takes about 40 s for the same queries.
+  - The field elements still need deep root refinement to separate. Field reduction does not remove the cancellation; it moves it.
