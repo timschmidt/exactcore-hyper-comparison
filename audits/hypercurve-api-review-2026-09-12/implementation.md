@@ -8800,3 +8800,7 @@ The other 15 still exceed 300 s.
   - site 18 (tangent.rs:1395): the cold trivariate fallback.
 
 **Observation.** In the measured stall (`round_stroke_of_a_filleted_nurbs_pair_completes`), the group-D centre arrives already as a degree-214 Bezier parameter. Converting group D would not reduce that case's field degree. Its cost comes from the upstream fillet-centre construction.
+- **Site 4 (group B) sized and deferred.** Widening `BezierAlgebraicCuspSemicircleParallelContact2.parallel_parameter` to `CurveParameter2` gives 32 compile errors across six files.
+  - About 19 are constructors that already hold a Bezier parameter, each needing only `.into()`.
+  - About 13 are readers that pass it to Bezier-only APIs: `cusp_overlap` scalar and point maps, the rational/parallel cut relations, `pair_kernels`, and fragment endpoint evidence. Each would need a fallible lazy promotion.
+  - Only site 4 itself starts from a field value, so the change would trade one promotion for 13 promotion points. Deferred until those readers move to region-parameter APIs.
