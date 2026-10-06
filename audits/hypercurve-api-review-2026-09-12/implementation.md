@@ -8675,3 +8675,6 @@ No case is un-ignored. The passes still run far above the suite's ordinary per-t
   - Extending the Horner enclosure to certified dyadic coefficient bounds (128 and 512 bits) did not decide it.
   - Neither did a 32-step refined-interval enclosure pass before the chain. It cost 0.3–1.1 s per call with no decision, because separation needs hundreds of bits of root precision.
   - The remaining cost is general-`Real` Sturm–Tarski arithmetic in `hypersolve::sign_at_selected_root` (`compact_exact_coefficients`, `polynomial_div_rem`).
+- **Two-root box enclosure, tried and reverted.** After the modular nonzero certificate, I tried a rational interval Horner enclosure of P(β, x) over both roots' isolators, refined geometrically to about 340 bits each, before the Bernstein conversion.
+  - It made no difference: `nested_xor` stayed at 289 s, and `chamfered_spline`, `chamfered_quadratic`, `filleted_union` and `trimmed_chamfered` still exceeded 300 s.
+  - Hypersolve passed 941 throughout.
