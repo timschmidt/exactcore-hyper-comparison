@@ -8573,3 +8573,17 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 - `mapped_contact_order_to_real` uses it, and now promotes the contact lazily, only in branches that need a global parameter.
 
 **Validation.** Each change was validated separately: Hypercurve 2,392 (549 s and 520 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+
+### Affine-relation centering, and S6 sites 6/10 deferred (2026-10-06, hypersolve d25658d)
+
+**Affine-relation centering.**
+- **Problem.** `chamfered_quadratic_bevel_stroke_round_trips` called `algebraic_root_affine_relation` 13 times on one degree-192 source pair (coefficients of about 700 bits). Each call took about 4.9 s, always with a negative result. The cost was the full Taylor shift of both polynomials by their root mean.
+- **Fix.** Only the first informative centered coefficient is now computed, as an O(degree) sum with exact incremental binomials.
+- **Result.** The calls now take 16–24 µs. The case still exceeds 300 s elsewhere.
+- **Tried and dropped.** Disjoint-isolator and modular-coprimality early exits in the common-root proof showed no gain, and were removed.
+- **Validation.** Hypersolve 941, Hypercurve 2,392 (532 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
+
+**S6 sites 6 and 10, deferred.** These are the rational/parallel orientation and complementarity at a cut.
+- Their parameter flows through four `BezierParameter2`-typed functions into `independent_diameter_sum_is_zero`, a two-radical zero test.
+- An in-field version needs a selected-fiber two-radical zero test and those signature changes.
+- No observed stall uses these sites.
