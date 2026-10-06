@@ -8613,3 +8613,13 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 - `chamfered_spline`, `refilleting`, `miter_eroded_ring` and `round_stroke_heavy_nurbs` still exceed 300 s.
 
 **Validation.** Hypersolve 941, Hypercurve 2,392 (538 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
+
+### Exact Horner enclosure before Bernstein restriction (2026-10-06, hypercurve 744e130d)
+
+**Problem.** In `round_stroke_of_a_filleted_nurbs_pair_completes`, `strict_coefficients_sign_on_parameter_interval` made 558 calls, signing degree-36 polynomials with 650–2,100-bit coefficients over a root interval with 143-bit endpoints. The calls took about 105 s in total, at up to 260 ms each. 557 of them decided strictly.
+
+**Change.** New `rational_horner_interval_strict_sign`: an exact rational interval Horner enclosure over the same closed interval. It answers only when the enclosure excludes zero; otherwise the Bernstein hull runs as before.
+
+**Result.** The case moves past these signs into selected-fiber Bernstein root isolation (`isolate_local_polynomial_roots_bernstein` via `selected_fiber_root_intervals_in_interval`).
+
+**Validation.** Hypercurve 2,392 (516 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
