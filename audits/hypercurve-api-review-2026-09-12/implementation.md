@@ -8541,3 +8541,21 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 **Remaining.** In this case the nonzero value is so small that 64 Bernstein bisections (about 26 s) do not separate it, and the complete chain then runs. A rule that sent certified-nonzero cases with small D directly to the chain showed no gain and was dropped.
 
 **Validation.** Hypersolve 941, Hypercurve 2,392, hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
+
+### S6 group A: promotion-free cusp contact evidence (2026-10-06, hypercurve e576cbd1)
+
+**Site map.** A planning pass mapped the 20 `promote_curve_region_bezier_parameter` sites by how each uses the promoted value:
+- **A, point evidence or scalar cache:** 3 sites.
+- **B, storage or mapping:** 2 sites.
+- **C, bivariate sign at a fixed cusp parameter:** 5 sites.
+- **D, a parallel-normal centre seeding a field:** 7 sites.
+- **Genuinely needing promotion:** 3 sites. These are trivariate systems across unrelated fields and the general overlap correspondence.
+
+**Group A changes.**
+- `rational_parameters_for_contact` now returns `CurveParameter2`.
+- Point evidence goes through the new `contact_point_evidence_at_region_parameter`. Bezier and exact-scalar parameters keep exact coordinates; other field values keep a lazy zero-distance analytic map.
+- The mapped cusp scalar projection uses a carried exact scalar first. Promotion stays the fallback that finds rational values.
+
+**Regression found and fixed.** The first version routed exact parameters to the lazy analytic path. That lost the exact (1, 0) fillet center in `retained_arc_selected_circle_endpoint_contact_uses_exact_fallback_frame`.
+
+**Validation.** Hypercurve 2,392 (494 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
