@@ -8587,3 +8587,15 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 - Their parameter flows through four `BezierParameter2`-typed functions into `independent_diameter_sum_is_zero`, a two-radical zero test.
 - An in-field version needs a selected-fiber two-radical zero test and those signature changes.
 - No observed stall uses these sites.
+
+### Two-root zero test before the Bernstein basis change (2026-10-06, hypersolve 3114c90)
+
+**Change.** `predicate_sign_by_isolation` now runs `predicate_vanishes_at_isolated_root` before `power_to_bernstein_on_interval`, rather than after the first unseparated check.
+- The test needs no Bernstein controls.
+- The basis change over predicate coefficients of about 25,000 bits, on a bracket with endpoints of about 1,000 bits, dominated `chamfered_quadratic_bevel_stroke_round_trips`.
+
+**Results.**
+- `nested_xor_miter_dilation_completes` now **completes in 291 s**. It stays ignored, being far above the suite's per-test scale.
+- `chamfered_quadratic` still exceeds 300 s.
+
+**Validation.** Hypersolve 941, Hypercurve 2,392 (530 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
