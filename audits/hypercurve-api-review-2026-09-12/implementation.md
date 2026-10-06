@@ -8559,3 +8559,17 @@ The two group-B promotion stalls are resolved. No case is un-ignored yet: these 
 **Regression found and fixed.** The first version routed exact parameters to the lazy analytic path. That lost the exact (1, 0) fillet center in `retained_arc_selected_circle_endpoint_contact_uses_exact_fallback_frame`.
 
 **Validation.** Hypercurve 2,392 (494 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
+
+### S6 site 5 and group C sites 7–8 (2026-10-06, hypercurve 67f5e2da and 3ba1fd17)
+
+**Site 5** (hypercurve 67f5e2da).
+- New `RationalBezierOverlapParameterCorrespondence2::map_region_parameter_between_curves`. It maps a retained region parameter in its own field through the existing region chart map, covering the identity, unit-complement and endpoint-projective charts on the unit range.
+- It still promotes for a general shared-image correspondence, a non-scalar parameter, or an undecided chart.
+- The coincident-rational branch of the mapped cusp overlap now uses it. A reversed map of a chord or cusp parameter promotes only to take the unit complement.
+
+**Sites 7 and 8** (hypercurve 3ba1fd17).
+- New helper, `bivariate_sign_at_cusp_and_region_parameter`. A contact that is a selected fiber over the same cusp root (`retains_parameter`) is signed by `predicate_sign` in its own field. Other contacts promote and use the correlated or independent pair sign as before.
+- `tangent_cross_dot_linear_combination_sign` uses the helper.
+- `mapped_contact_order_to_real` uses it, and now promotes the contact lazily, only in branches that need a global parameter.
+
+**Validation.** Each change was validated separately: Hypercurve 2,392 (549 s and 520 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing, plus the default-feature build.
