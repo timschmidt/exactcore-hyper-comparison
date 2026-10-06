@@ -8732,3 +8732,29 @@ For two sources, a nested local field would be used.
   - All 10 in-field calls decided, but they took 94 s; one took 84 s inside `LocalAlgebraicField` interval refinement.
   - The dense route with modular-first filter signs takes about 40 s for the same queries.
   - The field elements still need deep root refinement to separate. Field reduction does not remove the cancellation; it moves it.
+
+### Sweep after 7c4b1635, and a regression fix (2026-10-06, hypercurve 4dba64d7)
+
+**Sweep.** The same 8 cases pass:
+- `bevel_then_round`: 126 s
+- `beveled_rational_seed`: 72 s
+- `booleans_then_double`: 76 s
+- `nested_xor`: 294 s
+- `repeated_inward_miter`: 21 s
+- `weighted_conic`: 61 s
+- `mixed_cubic_arc`: 203 s
+- `mixed_family`: 123 s
+
+The other 15 still exceed 300 s.
+
+**Regression.** Timing at 6663ac90, cb372d03 and 7c4b1635 placed the slowdown in 7c4b1635:
+- `bevel_then_round`: 110 s → 109 s → 127 s
+- `beveled_rational_seed`: 58 s → 57 s → 73 s
+
+**Fix.** `MODULAR_FIRST_DEFINING_DEGREE = 16` restricts the modular-first route to large defining polynomials, which still covers `refilleting`'s degree-28 contacts. The two cases are back at 107 s and 56 s.
+
+**Validation.** Hypercurve 2,392 (563 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all passing.
+
+**Also tried and reverted:**
+- Mean-value enclosure: slower, at 166 s of enclosure time.
+- In-field two-radical sign retried on rational t*: 94 s for 10 calls, against about 40 s on the dense modular route.
