@@ -8758,3 +8758,14 @@ The other 15 still exceed 300 s.
 **Also tried and reverted:**
 - Mean-value enclosure: slower, at 166 s of enclosure time.
 - In-field two-radical sign retried on rational t*: 94 s for 10 calls, against about 40 s on the dense modular route.
+
+### Selected-fiber common-root counts: diagnosis, and a gate tried and reverted (2026-10-06)
+
+**Diagnosis.** In `filleted_boolean_miter_erosion_completes`, the completed `count_bivariate_fiber_system_roots` calls total only about 4 s. The stall is one call that counts common roots of two fiber polynomials, in degrees 36 and 40, with coefficients up to 389 bits, over a degree-14 retained field.
+- The existing modular coprimality certificate does not certify it, so the two polynomials likely share a factor.
+- The local gcd's rational subresultant rows then grow with both fiber degrees.
+
+**Gate, tried and reverted.** `LOCAL_SUBRESULTANT_GCD_MAX_DEGREE = 16` sent larger fibers to the reducing Euclidean chain, in both `local_polynomial_greatest_common_divisor` and `local_sturm_sequence`.
+- It moved the stall from the gcd to the Sturm chain, and then into `normalize_local_polynomial` field divisions.
+- Neither this case nor `stroke_fillet_stroke` improved within 300 s.
+- Counting roots of a degree-36+ polynomial over a degree-14 field remains the cost, whichever chain is used.
