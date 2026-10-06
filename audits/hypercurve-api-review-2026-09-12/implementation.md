@@ -8678,3 +8678,21 @@ No case is un-ignored. The passes still run far above the suite's ordinary per-t
 - **Two-root box enclosure, tried and reverted.** After the modular nonzero certificate, I tried a rational interval Horner enclosure of P(β, x) over both roots' isolators, refined geometrically to about 340 bits each, before the Bernstein conversion.
   - It made no difference: `nested_xor` stayed at 289 s, and `chamfered_spline`, `chamfered_quadratic`, `filleted_union` and `trimmed_chamfered` still exceeded 300 s.
   - Hypersolve passed 941 throughout.
+
+### Radical-preserving tower sign: design and first step, reverted (2026-10-06)
+
+**Design.** A planning pass found that the recursive sign rule in `dense_two_positive_square_root_sum_sign` is sound. The cost is that every leaf goes through `dense_polynomial_tuple_sign` on a fully expanded tensor with coefficients of about 25,000 bits. It proposed a three-stage leaf primitive:
+1. interval evaluation over the shared `source_box` refinement;
+2. a modular nonzero certificate for the leaf's norm, computed residue-wise without building the exact norm;
+3. exact local-field arithmetic only for zeros.
+
+For two sources, a nested local field would be used.
+
+**Step 1, implemented and reverted.** `two_positive_square_root_sum_sign_in_field` signed the two-radical expression for one source in `AlgebraicField`, with reduced field elements and shared refinement. It was tried first in complete passes. A unit test with exact cancellations passed, and hypersolve passed 942.
+- None of `refilleting`, `chamfered_spline`, `miter_eroded_ring`, `wide_weighted`, `round_stroke_heavy` or `chamfered_conic` improved, and `nested_xor` stayed at 290 s.
+- In `refilleting` the cost moved into the field's exact zero test, `polynomial_vanishes_at_owned_root` → `polynomial_gcd`.
+- A longer interval schedule before that gcd did not separate the value, so it is a true zero.
+
+**Root cause in `refilleting`.** The tower's base expression coefficients are not rationals but deep lazy `Real` DAGs. Even `{:?}` formatting of one coefficient ran for minutes. Every exact operation on them (Sturm–Tarski, local gcd) pays that cost, and the modular certificate cannot apply.
+
+**Recommended next step.** Find where these lazy DAG coefficients are introduced, likely fillet-of-fillet construction on `solve_carrier_fillet_corner` → `fillet_point_parameters`. Then retain them as algebraic generators or normalized rationals instead.
