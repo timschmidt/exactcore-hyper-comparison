@@ -8483,3 +8483,49 @@ Every case had a 300 s budget, and the hyperbola pair was skipped as a known sta
 
 The two group-B promotion stalls are resolved. No case is un-ignored yet: these runtimes remain far above the suite's ordinary per-test scale.
 - **Validation and commit:** full validation passed: Hypercurve 2,392 (549 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features, plus the default-feature builds. Committed as hypercurve 82ee35fd.
+
+### Remaining stalls regrouped; two-root sign by exclusion and norm (2026-10-05)
+
+**Stall groups after 82ee35fd.** The 16 remaining stalled cases were sampled and grouped by innermost frame.
+
+- **Two-root local-field sign (`dense_sign_at_two_selected_roots`), 6 cases:**
+  - `filleted_union_miter_dilation_completes`
+  - `nested_xor_miter_dilation_completes`
+  - `wide_weighted_conic_miter_bevel_bevel_offsets_complete`
+  - `chamfered_cubic_line_bevel_stroke_round_trips`
+  - `chamfered_quadratic_bevel_stroke_round_trips`
+  - `trimmed_chamfered_arc_cubic_bevel_stroke_completes`
+- **Selected-fiber root counting, 2 cases:**
+  - `filleted_boolean_miter_erosion_completes`
+  - `stroke_fillet_stroke_of_a_cubic_arc_path_completes`
+- **Univariate replay and Sturm sequences, 5 cases:**
+  - `miter_eroded_ring_miter_erosion_completes`
+  - `chamfered_spline_bevel_stroke_round_trips`
+  - `refilleting_a_filleted_vertex_completes`
+  - `round_stroke_of_a_filleted_nurbs_pair_completes`
+  - `round_stroke_of_a_filleted_heavy_nurbs_path_completes`
+- **Recursive projection or root isolation, 2 cases:**
+  - `chamfered_conic_round_then_miter_inward_offset_completes`
+  - `chamfered_rational_nurbs_miter_stroke_completes`
+- **Resultant determinant, 1 case:** `miter_stroke_of_a_filleted_heavy_rational_cubic_completes`.
+
+**Diagnosis (in `nested_xor`):**
+- The variable root's defining polynomial D has degree 75 and 151-bit coefficients. The predicate has degree 14–28 over a cubic field.
+- A Sturm–Tarski chain over D therefore blows up.
+- Local-field element signs also took up to 40,304 root refinements on nearly cancelling 260,000-bit coefficients.
+
+**Fix, hypersolve 240ab89:** `predicate_sign_by_isolation`.
+- **Exclusion.** The root's bracket is bisected by exact rational signs of D. De Casteljau subdivision follows the predicate's Bernstein controls, and controls sharing one strict sign prove the sign at the root.
+- **Zero test.** An unseparated predicate is first tested for an exact zero. Its norm over the local field, `quotient_ring_fiber_resultant_polynomial` (here degree 84, built in 3 ms), is gcd'd with D over the rationals.
+  - If that common factor has no root in the bracket, the predicate is nonzero.
+  - If it does have one, and the field generator is its modulus' only real root (square-free, Sturm count 1) and the root is a simple norm root, then exactly one conjugate sheet pairs with the root. A non-real sheet would bring its complex conjugate and a double norm root. So the predicate vanishes on the selected sheet.
+  - Here D divides the norm entirely, so a local-field GCD would have needed all of D.
+- **Fallbacks.** The local GCD and the complete chain remain for every other case.
+- **Measured.** The stalled zero proofs now take 0.21 s.
+- **Test.** `two_selected_roots_prove_a_zero_on_the_single_real_sheet` exercises the zero proof directly.
+- **Rejected.** A first attempt that preferred Sturm–Tarski over unbounded root refinement in `sign_reduced_polynomial` was reverted. It broke the refined-endpoint reuse tests and did not help.
+
+**Results:**
+- `nested_xor` now passes its two-root signs and stalls next in recursive-quadratic root isolation (`recursive_quadratic_polynomial_local_parameters`), the same frame as `chamfered_conic_round_then_miter_inward_offset_completes`.
+- The other five cases in the group still exceed 300 s.
+- Validation passed: hypersolve 940 plus the new test, Hypercurve 2,392 (530 s wall), hypercircuit 343, csgrs 141 and hyperbrep 233, all with all features.
