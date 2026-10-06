@@ -8804,3 +8804,7 @@ The other 15 still exceed 300 s.
   - About 19 are constructors that already hold a Bezier parameter, each needing only `.into()`.
   - About 13 are readers that pass it to Bezier-only APIs: `cusp_overlap` scalar and point maps, the rational/parallel cut relations, `pair_kernels`, and fragment endpoint evidence. Each would need a fallible lazy promotion.
   - Only site 4 itself starts from a field value, so the change would trade one promotion for 13 promotion points. Deferred until those readers move to region-parameter APIs.
+
+### Session end (2026-10-06)
+
+At the user's request, the session ends here. Future directions are recorded in `hypercurve/FUTURE_WORK.md`.
